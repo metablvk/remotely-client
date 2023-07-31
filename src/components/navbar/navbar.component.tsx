@@ -1,11 +1,28 @@
 import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import {links} from './constants';
+import {useAppSelector} from '../../store/hooks';
+import {useDispatch} from 'react-redux';
+import {useLogoutMutation} from '../../store/slices/api/user/user.slice';
+import {logout} from '../../store/slices/auth/auth.slice';
+import Links from './links/links.component';
+import Hamburger from './hamburger/hamburger.component';
 import './navbar.styles.css';
 
 // TODO: Style mobile menu
 const Navbar = () => {
   const [menuState, setMenuState] = useState(false);
+  const {userInfo} = useAppSelector(state => state.auth);
+  const [logoutApiCall] = useLogoutMutation();
+  const dispatch = useDispatch();
+
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall(userInfo).unwrap();
+      dispatch(logout());
+    } catch (err) {
+      console.log(err);
+    }
+  };
   useEffect(() => {
     // Hide scroll bar when menu is open
     if (menuState) {
@@ -22,20 +39,14 @@ const Navbar = () => {
         <div className="navbar-brand">
           <Link to="/">Remotely</Link>
         </div>
-        <button
-          className={`hamburger md:hidden focus:outline-none ${
-            menuState ? `open` : ''
-          }`}
-          onClick={handleClick}
-        >
-          <span className="hamburger-top"></span>
-          <span className="hamburger-middle"></span>
-          <span className="hamburger-bottom"></span>
-        </button>
+        <Hamburger menuState={menuState} handleClick={handleClick} />
         <div className="hidden md:flex space-x-4">
-          {links.map((l, id) => {
-            return <Link to={`${l[0]}`} key={id}>{`${l[1]}`}</Link>;
-          })}
+          <Links
+            userInfo={userInfo}
+            logoutHandler={logoutHandler}
+            handleClick={handleClick}
+            mobile={false}
+          />
         </div>
       </nav>
       <hr className="border" />
@@ -48,16 +59,12 @@ const Navbar = () => {
         } `}
       >
         <div className="container p-0  flex flex-col">
-          {' '}
-          {links.map((l, id) => {
-            return (
-              <Link
-                to={`${l[0]}`}
-                onClick={handleClick}
-                key={id}
-              >{`${l[1]}`}</Link>
-            );
-          })}
+          <Links
+            userInfo={userInfo}
+            logoutHandler={logoutHandler}
+            handleClick={handleClick}
+            mobile={true}
+          />
         </div>
       </nav>
     </>
