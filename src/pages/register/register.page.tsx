@@ -1,8 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
+import {useRegisterMutation} from '../../store/slices/api/user/user.slice';
+import {setCredentials} from '../../store/slices/auth/auth.slice';
+import {useAppSelector} from '../../store/hooks';
+import {useDispatch} from 'react-redux';
 
 const schema = yup.object().shape({
   name: yup.string().required(),
@@ -21,18 +25,26 @@ const Register = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {userInfo} = useAppSelector(state => state.auth);
+  const [registerUser] = useRegisterMutation();
 
   const onSubmit = async data => {
-    console.log(data);
-    // const {name, email, password} = data;
-    // try {
-    //   const res = await registerUser({name, email, password}).unwrap();
-    //   dispatch(setCredentials({...res}));
-    //   navigate('/profile');
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    const {name, email, password} = data;
+    try {
+      const res = await registerUser({name, email, password}).unwrap();
+      dispatch(setCredentials({...res}));
+    } catch (err) {
+      console.log(err);
+    }
   };
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate('/');
+    }
+  }, [userInfo, navigate]);
   return (
     <form
       className="col-span-12 md:col-span-6 md:col-start-4 md:border md:p-4 lg:col-span-4 lg:col-start-5  "
