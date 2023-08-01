@@ -8,14 +8,15 @@ export default {
         center: true,
 
         // or have default horizontal padding
-        padding: '1.4rem',
+        padding: '1rem',
 
         // default breakpoints but with 40px removed
+
         screens: {
           sm: '480px',
           md: '768px',
           lg: '976px',
-          xl: '1440px',
+          xl: '1140px',
         },
       },
     },

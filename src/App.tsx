@@ -7,7 +7,7 @@ function App() {
   return (
     <div>
       <Navbar />
-      <div className="container grid grid-cols-12 mt-8">
+      <div className="container">
         <Outlet />
       </div>
     </div>

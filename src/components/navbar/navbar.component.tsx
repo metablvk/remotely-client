@@ -54,11 +54,11 @@ const Navbar = () => {
       <nav
         className={`${
           menuState
-            ? 'absolute left-0 bg-white w-full pl-10 pt-8 h-screen space-y-4 md:hidden'
+            ? 'absolute left-0 p-0 bg-white w-full pt-8 h-screen space-y-4 md:hidden'
             : 'hidden max-w-0 overflow-hidden p-0 md:hidden'
         } `}
       >
-        <div className="container p-0  flex flex-col">
+        <div className="container flex flex-col">
           <Links
             userInfo={userInfo}
             logoutHandler={logoutHandler}
