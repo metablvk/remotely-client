@@ -6,10 +6,9 @@ import {useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {useUpdateUserMutation} from '../../store/slices/api/user/user.slice';
 import {setCredentials} from '../../store/slices/auth/auth.slice';
-import UpdateUser from '../../components/forms/update-user/update-user.component';
 import {useDispatch} from 'react-redux';
-
 import * as yup from 'yup';
+import UpdateUserForm from '../../components/forms/update-user/update-user.form';
 
 const schema = yup.object().shape({
   name: yup.string(),
@@ -61,7 +60,7 @@ const Profile = () => {
         </div>
         <div className="space-y-2">
           {edit ? (
-            <UpdateUser
+            <UpdateUserForm
               handleSubmit={handleSubmit}
               onSubmit={onSubmit}
               register={register}

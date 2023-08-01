@@ -1,6 +1,6 @@
 import React from 'react';
 
-const UpdateUser = ({handleSubmit, onSubmit, register, errors}) => (
+const UpdateUserForm = ({handleSubmit, onSubmit, register, errors}) => (
   <form className="w-full space-y-2" onSubmit={handleSubmit(onSubmit)}>
     <div className="space-y-1">
       <label className="font-bold block" htmlFor="name">
@@ -47,4 +47,4 @@ const UpdateUser = ({handleSubmit, onSubmit, register, errors}) => (
   </form>
 );
 
-export default UpdateUser;
+export default UpdateUserForm;
