@@ -20,6 +20,7 @@ import Profile from './pages/profile/profile.page';
 // Private Route
 import PrivateRoute from './components/private-route/private-route.component';
 import CreateJob from './pages/job/create-job.page';
+import UpdateJob from './pages/job/update-job.page';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,6 +31,7 @@ const router = createBrowserRouter(
       <Route path="" element={<PrivateRoute />}>
         <Route path="/profile" element={<Profile />} />
         <Route path="/job" element={<CreateJob />} />
+        <Route path="/job/:id" element={<UpdateJob />} />
       </Route>
     </Route>
   )

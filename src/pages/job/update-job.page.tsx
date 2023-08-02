@@ -1,15 +1,20 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
-import {useCreateJobMutation} from './../../store/slices/api/job/job.slice';
+
 import * as yup from 'yup';
 import Grid from '../../components/grid/grid.component';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import {useDispatch} from 'react-redux';
-import {addJob} from '../../store/slices/job/job.slice';
+
+import {
+  useGetJobQuery,
+  useUpdateJobMutation,
+} from '../../store/slices/api/job/job.slice';
+import {useAppDispatch, useAppSelector} from '../../store/hooks';
+import {updateJobArr} from '../../store/slices/job/job.slice';
 
 const schema = yup.object().shape({
   title: yup.string().required(),
@@ -17,32 +22,53 @@ const schema = yup.object().shape({
   payRate: yup.string().required(),
 });
 
-const CreateJob = () => {
+const UpdateJob = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: {errors},
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const dispatch = useDispatch();
+  const {userInfo} = useAppSelector(state => state.auth);
+  const {id} = useParams();
+  const {data} = useGetJobQuery(id);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [desc, setDesc] = useState('');
   const [descErr, setDescErr] = useState('');
-  const [createJob] = useCreateJobMutation();
+  const [updateJob] = useUpdateJobMutation();
+
+  useEffect(() => {
+    if (data) {
+      if (userInfo._id !== data.createdBy) {
+        navigate('/');
+      } else {
+        reset({
+          title: data.title,
+          payType: data.payType,
+          payRate: data.payRate,
+        });
+        setDesc(data.desc);
+      }
+    }
+  }, [reset, data, navigate, userInfo]);
 
   const onSubmit = async data => {
     const {title, payType, payRate} = data;
     if (data && desc.length > 0) {
+      console.log(title, payType, payRate);
       try {
-        const res = await createJob({
+        const res = await updateJob({
+          _id: id,
           title,
           payType,
           payRate,
           desc,
         }).unwrap();
         if (res) {
-          dispatch(addJob(res));
+          dispatch(updateJobArr(res));
           navigate('/');
           setDescErr('');
         }
@@ -56,7 +82,7 @@ const CreateJob = () => {
   return (
     <Grid>
       <div className="col-span-12 md:col-span-8 md:col-start-3">
-        <h1 className="mb-4 text-lg font-bold tracking-wide">Create Job</h1>
+        <h1 className="mb-4 text-lg font-bold tracking-wide">Edit Job</h1>
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <label htmlFor="title" className="block mb-2">
@@ -112,7 +138,7 @@ const CreateJob = () => {
             className="rounded block ml-auto bg-green-500 mt-4 py-2 px-4 text-white"
             type="submit"
           >
-            Create Job
+            Submit
           </button>
         </form>
       </div>
@@ -120,4 +146,4 @@ const CreateJob = () => {
   );
 };
 
-export default CreateJob;
+export default UpdateJob;
