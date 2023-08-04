@@ -30,7 +30,7 @@ const Home = () => {
           <div className="hidden md:block md:col-span-2">
             <h2>Filter</h2>
           </div>
-          <div className="col-span-8 ">
+          <div className="col-span-12 md:col-span-8 ">
             <h2 className="mb-4">Job Results</h2>
             <div className="jobs space-y-4">
               {jobs &&

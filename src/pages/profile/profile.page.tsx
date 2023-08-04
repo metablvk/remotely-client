@@ -9,6 +9,7 @@ import {setCredentials} from '../../store/slices/auth/auth.slice';
 import {useDispatch} from 'react-redux';
 import * as yup from 'yup';
 import UpdateUserForm from '../../components/forms/update-user/update-user.form';
+import {Link} from 'react-router-dom';
 
 const schema = yup.object().shape({
   name: yup.string(),
@@ -26,9 +27,11 @@ const Profile = () => {
     resolver: yupResolver(schema),
   });
   const [edit, setEdit] = useState(false);
+
   const dispatch = useDispatch();
   const [updateUser] = useUpdateUserMutation();
   const {userInfo} = useAppSelector(state => state.auth);
+  const {uJobs} = useAppSelector(state => state.job);
 
   useEffect(() => {
     reset({
@@ -49,7 +52,7 @@ const Profile = () => {
   const handleClick = () => setEdit(!edit);
 
   return (
-    <Grid>
+    <Grid classNames="gap-2 mt-8">
       <div className="mb-2 col-span-12 lg:border lg:col-span-4 lg:p-4">
         <h2>Setting</h2>
       </div>
@@ -83,6 +86,19 @@ const Profile = () => {
             </>
           )}
         </div>
+      </div>
+      <div className="col-span-12 lg:col-span-7 lg:col-start-6 lg:border lg:p-4">
+        <h2>Your Job Postings</h2>
+        {uJobs &&
+          uJobs.map((job, id) => {
+            return (
+              <div key={id}>
+                <Link to={`/job/${job._id}`}>
+                  <h3 className="">{job.title}</h3>
+                </Link>
+              </div>
+            );
+          })}
       </div>
     </Grid>
   );

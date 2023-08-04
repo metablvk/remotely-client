@@ -17,6 +17,9 @@ export const jobsApiSlice = apiSlice.injectEndpoints({
     getAllJobs: builder.query<IJob[], void>({
       query: () => `${JOB_URL}`,
     }),
+    getJobsByUId: builder.query<IJob[], void>({
+      query: uid => `${JOB_URL}/users/${uid}`,
+    }),
     updateJob: builder.mutation({
       query: data => ({
         url: `${JOB_URL}/${data._id}`,
@@ -32,4 +35,5 @@ export const {
   useUpdateJobMutation,
   useGetJobQuery,
   useGetAllJobsQuery,
+  useGetJobsByUIdQuery,
 } = jobsApiSlice;

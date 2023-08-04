@@ -9,12 +9,9 @@ import Grid from '../../components/grid/grid.component';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-import {
-  useGetJobQuery,
-  useUpdateJobMutation,
-} from '../../store/slices/api/job/job.slice';
+import {useUpdateJobMutation} from '../../store/slices/api/job/job.slice';
 import {useAppDispatch, useAppSelector} from '../../store/hooks';
-import {updateJobArr} from '../../store/slices/job/job.slice';
+import {updateJobArr, updateUJobArr} from '../../store/slices/job/job.slice';
 
 const schema = yup.object().shape({
   title: yup.string().required(),
@@ -32,33 +29,40 @@ const UpdateJob = () => {
     resolver: yupResolver(schema),
   });
   const {userInfo} = useAppSelector(state => state.auth);
-  const {id} = useParams();
-  const {data} = useGetJobQuery(id);
+  const {id} = useParams(); // job id
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [desc, setDesc] = useState('');
   const [descErr, setDescErr] = useState('');
   const [updateJob] = useUpdateJobMutation();
+  const {uJobs} = useAppSelector(state => state.job);
 
+  // TODO: create its own component to handle this logic
   useEffect(() => {
-    if (data) {
-      if (userInfo._id !== data.createdBy) {
-        navigate('/');
-      } else {
+    const job = uJobs.filter(job => job._id === id)[0];
+    if (job.createdBy !== userInfo._id) {
+      navigate('/');
+    } else {
+      console.log('authorized');
+    }
+  }, [uJobs, id, userInfo, navigate]);
+  useEffect(() => {
+    if (uJobs && userInfo) {
+      const job = uJobs.filter(job => job._id === id)[0];
+      if (job && userInfo) {
         reset({
-          title: data.title,
-          payType: data.payType,
-          payRate: data.payRate,
+          title: job.title,
+          payType: job.payType,
+          payRate: job.payRate,
         });
-        setDesc(data.desc);
+        setDesc(job.desc);
       }
     }
-  }, [reset, data, navigate, userInfo]);
+  }, [reset, uJobs, id, navigate, userInfo]);
 
   const onSubmit = async data => {
     const {title, payType, payRate} = data;
     if (data && desc.length > 0) {
-      console.log(title, payType, payRate);
       try {
         const res = await updateJob({
           _id: id,
@@ -69,7 +73,8 @@ const UpdateJob = () => {
         }).unwrap();
         if (res) {
           dispatch(updateJobArr(res));
-          navigate('/');
+          dispatch(updateUJobArr(res));
+          navigate('/profile');
           setDescErr('');
         }
       } catch (err) {
